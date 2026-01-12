@@ -30,6 +30,7 @@ import android.content.IntentFilter;
 import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,7 +56,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.contacts.AppCompatContactsActivity;
@@ -71,6 +74,7 @@ import com.android.contacts.group.GroupMembersFragment;
 import com.android.contacts.group.GroupNameEditDialogFragment;
 import com.android.contacts.group.GroupUtil;
 import com.android.contacts.list.AccountFilterActivity;
+import com.android.contacts.list.ContactListAdapter;
 import com.android.contacts.list.ContactListFilter;
 import com.android.contacts.list.ContactListFilterController;
 import com.android.contacts.list.ContactListFilterController.ContactListFilterListener;
@@ -187,6 +191,7 @@ public class PeopleActivity extends AppCompatContactsActivity implements
     private DrawerFragment mDrawerFragment;
     private ContactsActionBarDrawerToggle mToggle;
     private Toolbar mToolbar;
+    private boolean mRequestInitialToolbarFocus;
 
     // The account the new group will be created under.
     private AccountWithDataSet mNewGroupAccount;
@@ -404,6 +409,7 @@ public class PeopleActivity extends AppCompatContactsActivity implements
         mProviderStatusWatcher.addListener(mProviderStatusListener);
 
         mIsRecreatedInstance = (savedState != null);
+        mRequestInitialToolbarFocus = !mIsRecreatedInstance;
 
         if (mIsRecreatedInstance) {
             mGroupUri = savedState.getParcelable(KEY_GROUP_URI);
@@ -1101,6 +1107,187 @@ public class PeopleActivity extends AppCompatContactsActivity implements
 
     public Toolbar getToolbar() {
         return mToolbar;
+    }
+
+    public void updateDpadNavigation() {
+        if (mToolbar == null) {
+            return;
+        }
+        mToolbar.post(new Runnable() {
+            @Override
+            public void run() {
+                updateDpadNavigationInternal();
+            }
+        });
+    }
+
+    private void updateDpadNavigationInternal() {
+        View navButton = findToolbarNavigationButton();
+        View searchButton = mToolbar.findViewById(R.id.menu_search);
+        View searchView = mToolbar.findViewById(R.id.search_view);
+        if (navButton != null && navButton.getVisibility() != View.VISIBLE) {
+            navButton = null;
+        }
+        if (searchButton != null && searchButton.getVisibility() != View.VISIBLE) {
+            searchButton = null;
+        }
+        if (searchView != null && searchView.getVisibility() != View.VISIBLE) {
+            searchView = null;
+        }
+
+        ListView listView = null;
+        if (mContactsListFragment != null) {
+            listView = mContactsListFragment.getListView();
+        }
+
+        View.OnKeyListener focusDownListener = null;
+        if (listView != null) {
+            final ContactListAdapter selectionAdapter = mContactsListFragment != null
+                    ? mContactsListFragment.getAdapter() : null;
+            final ListView focusListView = listView;
+            focusDownListener = new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode != KeyEvent.KEYCODE_DPAD_DOWN
+                            || event.getAction() != KeyEvent.ACTION_DOWN) {
+                        return false;
+                    }
+                    if (focusListView.getVisibility() != View.VISIBLE) {
+                        return false;
+                    }
+                    focusListView.requestFocus();
+                    if (focusListView.getSelectedItemPosition() == AdapterView.INVALID_POSITION
+                            && focusListView.getCount() > 0) {
+                        int selectedPosition = AdapterView.INVALID_POSITION;
+                        if (selectionAdapter != null) {
+                            selectedPosition = selectionAdapter.getSelectedContactPosition();
+                        }
+                        if (selectedPosition != AdapterView.INVALID_POSITION) {
+                            focusListView.setSelection(selectedPosition
+                                    + focusListView.getHeaderViewsCount());
+                        } else {
+                            focusListView.setSelection(focusListView.getFirstVisiblePosition());
+                        }
+                    }
+                    return true;
+                }
+            };
+        }
+
+        View.OnKeyListener listUpListener = null;
+        if (listView != null && searchView != null) {
+            final ListView focusListView = listView;
+            final View focusSearchView = searchView;
+            listUpListener = new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode != KeyEvent.KEYCODE_DPAD_UP
+                            || event.getAction() != KeyEvent.ACTION_DOWN) {
+                        return false;
+                    }
+                    if (focusSearchView.getVisibility() != View.VISIBLE) {
+                        return false;
+                    }
+                    final int selectedPosition = focusListView.getSelectedItemPosition();
+                    final int headerCount = focusListView.getHeaderViewsCount();
+                    if (selectedPosition == AdapterView.INVALID_POSITION
+                            || selectedPosition <= headerCount) {
+                        focusSearchView.requestFocus();
+                        return true;
+                    }
+                    return false;
+                }
+            };
+        }
+
+        if (navButton != null) {
+            navButton.setFocusable(true);
+            navButton.setFocusableInTouchMode(true);
+            if (listView != null && listView.getId() != View.NO_ID) {
+                navButton.setNextFocusDownId(listView.getId());
+            }
+            if (focusDownListener != null) {
+                navButton.setOnKeyListener(focusDownListener);
+            }
+        }
+        if (searchButton != null) {
+            searchButton.setFocusable(true);
+            searchButton.setFocusableInTouchMode(true);
+            if (listView != null && listView.getId() != View.NO_ID) {
+                searchButton.setNextFocusDownId(listView.getId());
+            }
+            if (focusDownListener != null) {
+                searchButton.setOnKeyListener(focusDownListener);
+            }
+        }
+        if (searchView != null) {
+            searchView.setFocusable(true);
+            searchView.setFocusableInTouchMode(true);
+            if (listView != null && listView.getId() != View.NO_ID) {
+                searchView.setNextFocusDownId(listView.getId());
+            }
+            if (focusDownListener != null) {
+                searchView.setOnKeyListener(focusDownListener);
+            }
+        }
+        if (navButton != null && searchButton != null) {
+            navButton.setNextFocusRightId(searchButton.getId());
+            searchButton.setNextFocusLeftId(navButton.getId());
+        }
+
+        if (listView != null && listView.getId() != View.NO_ID) {
+            if (searchView != null) {
+                listView.setNextFocusUpId(searchView.getId());
+            } else if (navButton != null) {
+                listView.setNextFocusUpId(navButton.getId());
+            } else if (searchButton != null) {
+                listView.setNextFocusUpId(searchButton.getId());
+            }
+            listView.setOnKeyListener(listUpListener);
+        }
+
+        if (mRequestInitialToolbarFocus) {
+            View initialFocus = navButton != null ? navButton : searchButton;
+            if (initialFocus != null) {
+                initialFocus.requestFocus();
+                mRequestInitialToolbarFocus = false;
+            }
+        }
+    }
+
+    private View findToolbarNavigationButton() {
+        if (mToolbar == null) {
+            return null;
+        }
+        final Drawable navIcon = mToolbar.getNavigationIcon();
+        final CharSequence navDescription = mToolbar.getNavigationContentDescription();
+        final int childCount = mToolbar.getChildCount();
+        ImageButton firstButton = null;
+        for (int i = 0; i < childCount; i++) {
+            View child = mToolbar.getChildAt(i);
+            if (!(child instanceof ImageButton)) {
+                continue;
+            }
+            ImageButton button = (ImageButton) child;
+            if (firstButton == null) {
+                firstButton = button;
+            }
+            if (navDescription != null && navDescription.equals(button.getContentDescription())) {
+                return button;
+            }
+            if (navIcon != null && button.getDrawable() != null) {
+                Drawable childDrawable = button.getDrawable();
+                if (childDrawable == navIcon) {
+                    return button;
+                }
+                if (childDrawable.getConstantState() != null
+                        && navIcon.getConstantState() != null
+                        && childDrawable.getConstantState().equals(navIcon.getConstantState())) {
+                    return button;
+                }
+            }
+        }
+        return firstButton;
     }
 
     @Override

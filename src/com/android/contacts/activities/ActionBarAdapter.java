@@ -190,6 +190,7 @@ public class ActionBarAdapter implements OnCloseListener {
                         }
                     }
                 });
+        updateDpadNavigation();
     }
 
     public void initialize(Bundle savedState, ContactsRequest request) {
@@ -274,9 +275,13 @@ public class ActionBarAdapter implements OnCloseListener {
                 mSearchView.setEnabled(false);
             }
             setQueryString(null);
+            updateDpadNavigation();
         } else if (flag) {
             // Everything is already set up. Still make sure the keyboard is up
-            if (mSearchView != null) setFocusOnSearchView();
+            if (mSearchView != null) {
+                setFocusOnSearchView();
+                updateDpadNavigation();
+            }
         }
     }
 
@@ -284,6 +289,7 @@ public class ActionBarAdapter implements OnCloseListener {
         if (mSelectionMode != flag) {
             mSelectionMode = flag;
             update(false /* skipAnimation */);
+            updateDpadNavigation();
         }
     }
 
@@ -433,6 +439,12 @@ public class ActionBarAdapter implements OnCloseListener {
                     }
                 });
             }
+        }
+    }
+
+    private void updateDpadNavigation() {
+        if (mActivity instanceof PeopleActivity) {
+            ((PeopleActivity) mActivity).updateDpadNavigation();
         }
     }
 

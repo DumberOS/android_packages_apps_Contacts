@@ -54,6 +54,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -154,6 +155,7 @@ public class DefaultContactBrowseListFragment extends ContactBrowseListFragment
     private boolean mDisableOptionItemSelected;
 
     private boolean mSearchResultClicked;
+    private boolean mRestoreSelectionOnResume;
 
     private ActionBarAdapter mActionBarAdapter;
     private PeopleActivity mActivity;
@@ -289,6 +291,7 @@ public class DefaultContactBrowseListFragment extends ContactBrowseListFragment
         if (mActionBarAdapter != null) {
             mActionBarAdapter.updateOverflowButtonColor();
         }
+        maybeRestoreSelection();
     }
 
     private void maybeShowHamburgerFeatureHighlight() {
@@ -768,12 +771,33 @@ public class DefaultContactBrowseListFragment extends ContactBrowseListFragment
 
         mWritableAccountsFuture = AccountTypeManager.getInstance(getContext()).filterAccountsAsync(
                 AccountTypeManager.writableFilter());
+        maybeRestoreSelection();
     }
 
     private void maybeHideCheckBoxes() {
         if (!mActionBarAdapter.isSelectionMode()) {
             displayCheckBoxes(false);
         }
+    }
+
+    private void maybeRestoreSelection() {
+        if (!mRestoreSelectionOnResume || isSearchMode()) {
+            return;
+        }
+        final ListView listView = getListView();
+        if (listView == null) {
+            return;
+        }
+        final ContactListAdapter adapter = getAdapter();
+        if (adapter == null) {
+            return;
+        }
+        final int selectedPosition = adapter.getSelectedContactPosition();
+        if (selectedPosition == -1) {
+            return;
+        }
+        mRestoreSelectionOnResume = false;
+        listView.setSelection(selectedPosition + listView.getHeaderViewsCount());
     }
 
     public ActionBarAdapter getActionBarAdapter(){
@@ -916,6 +940,7 @@ public class DefaultContactBrowseListFragment extends ContactBrowseListFragment
         @Override
         public void onViewContactAction(int position, Uri contactLookupUri,
                 boolean isEnterpriseContact) {
+            mRestoreSelectionOnResume = true;
             if (isEnterpriseContact) {
                 // No implicit intent as user may have a different contacts app in work profile.
                 ContactsContract.QuickContact.showQuickContact(getContext(), new Rect(),
@@ -1029,6 +1054,10 @@ public class DefaultContactBrowseListFragment extends ContactBrowseListFragment
                 icon.mutate().setColorFilter(ContextCompat.getColor(getContext(),
                         R.color.actionbar_icon_color), PorterDuff.Mode.SRC_ATOP);
             }
+        }
+
+        if (mActivity != null) {
+            mActivity.updateDpadNavigation();
         }
     }
 
