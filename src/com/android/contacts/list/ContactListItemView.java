@@ -260,6 +260,9 @@ public class ContactListItemView extends ViewGroup
     public ContactListItemView(Context context) {
         super(context);
 
+        setAddStatesFromChildren(true);
+        setBackgroundResource(R.drawable.focus_item_background);
+
         mTextHighlighter = new TextHighlighter(Typeface.BOLD);
         mNameHighlightSequence = new ArrayList<HighlightSequence>();
         mNumberHighlightSequence = new ArrayList<HighlightSequence>();
@@ -273,6 +276,9 @@ public class ContactListItemView extends ViewGroup
 
     public ContactListItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        setAddStatesFromChildren(true);
+        setBackgroundResource(R.drawable.focus_item_background);
 
         TypedArray a;
 

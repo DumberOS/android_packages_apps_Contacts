@@ -30,6 +30,7 @@
         android:layout_marginStart="?attr/contact_browser_list_padding_left"
         android:layout_marginEnd="?attr/contact_browser_list_padding_right"
         android:paddingTop="@dimen/contact_browser_list_item_padding_top_or_bottom"
+        android:listSelector="@android:color/transparent"
         android:clipToPadding="false"
         android:fastScrollEnabled="true"
         android:forceDarkAllowed="false"/>
