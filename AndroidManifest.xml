@@ -652,6 +652,8 @@
     <queries>
         <!-- ContactsProvider2 -->
         <package android:name="com.android.providers.contacts"/>
+        <package android:name="com.dumbermini.davx"/>
+        <package android:name="at.bitfire.davdroid"/>
 
         <!-- quickcontact actions and verbs -->
         <intent>

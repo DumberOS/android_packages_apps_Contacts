@@ -494,4 +494,5 @@
     <string name="yes_button" msgid="1120514817091581293">"Ha"</string>
     <string name="no_button" msgid="8965841385742548947">"Yo‘q"</string>
     <string name="sdn_contacts_directory_search_label" msgid="9146122809408008443">"Operator xizmat raqamlari"</string>
+    <string name="import_from_google">Google-dan import qilish</string>
 </resources>

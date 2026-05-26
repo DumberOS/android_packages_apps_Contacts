@@ -494,4 +494,5 @@
     <string name="yes_button" msgid="1120514817091581293">"હા"</string>
     <string name="no_button" msgid="8965841385742548947">"ના"</string>
     <string name="sdn_contacts_directory_search_label" msgid="9146122809408008443">"મોબાઇલ ઑપરેટરના ફોન નંબર"</string>
+    <string name="import_from_google">Google માંથી આયાત કરો</string>
 </resources>

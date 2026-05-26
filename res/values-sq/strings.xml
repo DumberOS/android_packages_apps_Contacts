@@ -494,4 +494,5 @@
     <string name="yes_button" msgid="1120514817091581293">"Po"</string>
     <string name="no_button" msgid="8965841385742548947">"Jo"</string>
     <string name="sdn_contacts_directory_search_label" msgid="9146122809408008443">"Numrat e shërbimit të operatorit celular"</string>
+    <string name="import_from_google">Importo nga Google</string>
 </resources>

@@ -17,6 +17,7 @@ package com.android.contacts.list;
 
 import android.accounts.Account;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -96,6 +97,9 @@ public class DefaultContactBrowseListFragment extends ContactBrowseListFragment
         implements EnableGlobalSyncDialogFragment.Listener {
 
     private static final String TAG = "DefaultListFragment";
+    private static final String GOOGLE_IMPORT_PACKAGE = "com.dumbermini.davx";
+    private static final String GOOGLE_IMPORT_ACTIVITY =
+            "com.dumbermini.davx.ui.GoogleContactsSetupActivity";
     private static final String ENABLE_DEBUG_OPTIONS_HIDDEN_CODE = "debug debug!";
     private static final String KEY_DELETION_IN_PROGRESS = "deletionInProgress";
     private static final String KEY_SEARCH_RESULT_CLICKED = "search_result_clicked";
@@ -449,10 +453,40 @@ public class DefaultContactBrowseListFragment extends ContactBrowseListFragment
         image.setLayoutParams(params);
 
         // Set up add contact button.
+        final Button importFromGoogleButton =
+                (Button) emptyHomeView.findViewById(R.id.import_from_google_button);
+        final Intent googleImportIntent = getGoogleImportIntent();
+        if (googleImportIntent != null) {
+            importFromGoogleButton.setOnClickListener(v -> startActivity(googleImportIntent));
+        } else {
+            importFromGoogleButton.setVisibility(View.GONE);
+        }
+
         final Button addContactButton =
                 (Button) emptyHomeView.findViewById(R.id.add_contact_button);
         addContactButton.setOnClickListener(mAddContactListener);
         return emptyHomeView;
+    }
+
+    private Intent getGoogleImportIntent() {
+        final Context context = getContext();
+        if (context == null) {
+            return null;
+        }
+
+        final PackageManager packageManager = context.getPackageManager();
+        final ComponentName componentName = new ComponentName(
+                GOOGLE_IMPORT_PACKAGE,
+                GOOGLE_IMPORT_ACTIVITY
+        );
+        try {
+            packageManager.getActivityInfo(componentName, 0);
+            return new Intent()
+                    .setComponent(componentName)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
     }
 
     private View getEmptyAccountView(LayoutInflater inflater) {

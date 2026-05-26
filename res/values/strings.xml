@@ -270,6 +270,9 @@
     <!-- The text displayed when there's no contacts in the main contacts list [CHAR LIMIT=70] -->
     <string name="emptyMainList">Your contacts list is empty</string>
 
+    <!-- Empty home state CTA for launching the Google contacts import app [CHAR LIMIT=35] -->
+    <string name="import_from_google">Import from Google</string>
+
     <!-- Toast displayed when a contact is saved [CHAR LIMIT=30] -->
     <string name="contactSavedNamedToast"><xliff:g id="display_name">%s</xliff:g> saved</string>
 

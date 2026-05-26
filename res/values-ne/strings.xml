@@ -494,4 +494,5 @@
     <string name="yes_button" msgid="1120514817091581293">"हुन्छ"</string>
     <string name="no_button" msgid="8965841385742548947">"हुँदैन"</string>
     <string name="sdn_contacts_directory_search_label" msgid="9146122809408008443">"मोबाइल सेवा प्रदायकका सर्भिस नम्बरहरू"</string>
+    <string name="import_from_google">Google बाट आयात गर्नुहोस्</string>
 </resources>

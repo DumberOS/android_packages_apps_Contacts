@@ -494,4 +494,5 @@
     <string name="yes_button" msgid="1120514817091581293">"അതെ"</string>
     <string name="no_button" msgid="8965841385742548947">"ഇല്ല"</string>
     <string name="sdn_contacts_directory_search_label" msgid="9146122809408008443">"Carrier Service നമ്പറുകൾ"</string>
+    <string name="import_from_google">Google-ൽ നിന്ന് ഇംപോർട്ട് ചെയ്യുക</string>
 </resources>

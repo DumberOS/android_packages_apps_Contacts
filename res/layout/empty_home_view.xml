@@ -26,6 +26,15 @@
         style="@style/EmptyStateTextStyle"/>
 
     <Button
+        android:id="@+id/import_from_google_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="@string/import_from_google"
+        style="@style/AddContactsButtonStyle"/>
+
+    <Button
         android:id="@+id/add_contact_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

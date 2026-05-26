@@ -494,4 +494,5 @@
     <string name="yes_button" msgid="1120514817091581293">"Da"</string>
     <string name="no_button" msgid="8965841385742548947">"Nu"</string>
     <string name="sdn_contacts_directory_search_label" msgid="9146122809408008443">"Numere pentru servicii ale operatorului"</string>
+    <string name="import_from_google">Importați din Google</string>
 </resources>

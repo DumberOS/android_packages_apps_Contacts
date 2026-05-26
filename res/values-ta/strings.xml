@@ -494,4 +494,5 @@
     <string name="yes_button" msgid="1120514817091581293">"ஆம்"</string>
     <string name="no_button" msgid="8965841385742548947">"இல்லை"</string>
     <string name="sdn_contacts_directory_search_label" msgid="9146122809408008443">"மொபைல் நிறுவனத்தின் சேவை எண்கள்"</string>
+    <string name="import_from_google">Google இலிருந்து இறக்குமதி செய்</string>
 </resources>
