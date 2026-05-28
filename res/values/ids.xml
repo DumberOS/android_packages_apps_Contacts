@@ -56,6 +56,9 @@
     <!-- Menu ID for Contacts menu -->
     <item type="id" name="nav_all_contacts" />
 
+    <!-- Menu ID for DAVx5 menu -->
+    <item type="id" name="nav_davx5" />
+
     <!-- Menu ID for Suggestions menu -->
     <item type="id" name="nav_assistant" />
 

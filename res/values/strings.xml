@@ -22,6 +22,9 @@
     <!-- Directory partition name -->
     <string name="contactsList">Contacts</string>
 
+    <!-- Navigation drawer entry that opens the DAVx5 app. [CHAR LIMIT=20] -->
+    <string name="menu_davx5">DAVx⁵</string>
+
     <!-- Name of the dynamic shortcut that creates a new contact [CHAR LIMIT=30] -->
     <string name="shortcut_add_contact">Add contact</string>
 
@@ -1445,6 +1448,9 @@
 
     <!-- Toast message showing when failed to open the url. [CHAR LIMIT=100]-->
     <string name="url_open_error_toast">Failed to open the url.</string>
+
+    <!-- Toast shown when the DAVx5 app isn't available. [CHAR LIMIT=100] -->
+    <string name="davx5_not_installed_toast">DAVx⁵ is not installed.</string>
 
     <!-- Content description of entries (including that radio button is checked) in contact
          accounts list filter. For example: Google abc@gmail.com checked, etc [CHAR LIMIT=30]-->

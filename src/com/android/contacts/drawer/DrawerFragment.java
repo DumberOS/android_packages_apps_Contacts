@@ -267,6 +267,8 @@ public class DrawerFragment extends Fragment implements AccountsListener {
             } else if (viewId == R.id.nav_all_contacts) {
                 mListener.onContactsViewSelected(ContactsView.ALL_CONTACTS);
                 setNavigationItemChecked(ContactsView.ALL_CONTACTS);
+            } else if (viewId == R.id.nav_davx5) {
+                mListener.onLaunchDavx5();
             } else if (viewId == R.id.nav_assistant) {
                 mListener.onContactsViewSelected(ContactsView.ASSISTANT);
                 setNavigationItemChecked(ContactsView.ASSISTANT);
@@ -338,6 +340,7 @@ public class DrawerFragment extends Fragment implements AccountsListener {
     public interface DrawerFragmentListener {
         void onDrawerItemClicked();
         void onContactsViewSelected(ContactsView mode);
+        void onLaunchDavx5();
         void onGroupViewSelected(GroupListItem groupListItem);
         void onAccountViewSelected(ContactListFilter filter);
         void onCreateLabelButtonClicked();

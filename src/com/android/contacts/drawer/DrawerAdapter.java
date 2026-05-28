@@ -115,6 +115,8 @@ public class DrawerAdapter extends BaseAdapter {
         // Primary items
         mPrimaryItems.add(new PrimaryItem(R.id.nav_all_contacts, R.string.contactsList,
                 R.drawable.quantum_ic_account_circle_vd_theme_24, ContactsView.ALL_CONTACTS));
+        mPrimaryItems.add(new PrimaryItem(R.id.nav_davx5, R.string.menu_davx5,
+                R.drawable.quantum_ic_public_vd_theme_24, null));
         if (ObjectFactory.getAssistantFragment() != null) {
             mPrimaryItems.add(new PrimaryItem(R.id.nav_assistant, R.string.menu_assistant,
                     R.drawable.quantum_ic_assistant_vd_theme_24, ContactsView.ASSISTANT));

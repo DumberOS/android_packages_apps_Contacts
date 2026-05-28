@@ -21,13 +21,16 @@ import android.accounts.Account;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SyncStatusObserver;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -145,6 +148,9 @@ public class PeopleActivity extends AppCompatContactsActivity implements
     private static final String KEY_NEW_GROUP_ACCOUNT = "newGroupAccount";
 
     private static final long DRAWER_CLOSE_DELAY = 300L;
+    private static final String DAVX5_PACKAGE = "com.dumbermini.davx";
+    private static final String DAVX5_ACCOUNTS_ACTIVITY =
+            "at.bitfire.davdroid.ui.AccountsActivity";
 
     private ContactsIntentResolver mIntentResolver;
     private ContactsRequest mRequest;
@@ -1375,6 +1381,27 @@ public class PeopleActivity extends AppCompatContactsActivity implements
     }
 
     @Override
+    public void onLaunchDavx5() {
+        final Intent intent = getDavx5Intent();
+        if (intent == null) {
+            Toast.makeText(this, R.string.davx5_not_installed_toast, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(PeopleActivity.this, R.string.davx5_not_installed_toast,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, DRAWER_CLOSE_DELAY);
+    }
+
+    @Override
     public void onOpenSettings() {
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -1417,6 +1444,18 @@ public class PeopleActivity extends AppCompatContactsActivity implements
                     ContactsContract.Contacts.CONTENT_URI);
             intent.putExtra(ContactEditorFragment.INTENT_EXTRA_NEW_LOCAL_PROFILE, true);
             ImplicitIntentsUtil.startActivityInApp(this, intent);
+        }
+    }
+
+    private Intent getDavx5Intent() {
+        final ComponentName componentName = new ComponentName(
+                DAVX5_PACKAGE,
+                DAVX5_ACCOUNTS_ACTIVITY);
+        try {
+            getPackageManager().getActivityInfo(componentName, 0);
+            return new Intent().setComponent(componentName);
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
         }
     }
 
