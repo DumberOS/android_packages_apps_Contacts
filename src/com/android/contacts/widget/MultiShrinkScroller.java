@@ -292,6 +292,7 @@ public class MultiShrinkScroller extends FrameLayout {
     public void initialize(MultiShrinkScrollerListener listener, boolean isOpenContactSquare,
                 final int maximumHeaderTextSize, final boolean shouldUpdateNameViewHeight) {
         mScrollView = (ScrollView) findViewById(R.id.content_scroller);
+        mScrollView.setFocusable(false);
         mScrollViewChild = findViewById(R.id.card_container);
         mToolbar = findViewById(R.id.toolbar_parent);
         mPhotoViewContainer = findViewById(R.id.toolbar_parent);
@@ -335,6 +336,8 @@ public class MultiShrinkScroller extends FrameLayout {
                     expandHeader();
                 }
             });
+            // The photo remains expandable by touch; keyboard navigation goes to the actions.
+            mPhotoTouchInterceptOverlay.setFocusable(false);
         }
 
         SchedulingUtils.doOnPreDraw(this, /* drawNextFrame = */ false, new Runnable() {
@@ -343,8 +346,9 @@ public class MultiShrinkScroller extends FrameLayout {
                 if (!mIsTwoPanel) {
                     // We never want the height of the photo view to exceed its width.
                     mMaximumHeaderHeight = mPhotoViewContainer.getWidth();
-                    mIntermediateHeaderHeight = (int) (mMaximumHeaderHeight
-                            * INTERMEDIATE_HEADER_HEIGHT_RATIO);
+                    mIntermediateHeaderHeight = Math.min((int) (mMaximumHeaderHeight
+                            * INTERMEDIATE_HEADER_HEIGHT_RATIO), getResources()
+                            .getDimensionPixelSize(R.dimen.quickcontact_compact_header_height));
                 }
                 mMaximumPortraitHeaderHeight = mIsTwoPanel ? getHeight()
                         : mPhotoViewContainer.getWidth();

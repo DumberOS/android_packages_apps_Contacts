@@ -18,6 +18,7 @@
     class="com.android.contacts.quickcontact.ExpandingEntryCardView$EntryView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/SelectableItem"
+    android:foreground="@drawable/dpad_focus"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/expanding_entry_card_item_padding_start"
@@ -88,6 +89,9 @@
 
      <ImageView
          android:id="@+id/third_icon"
+         android:focusable="true"
+         android:focusableInTouchMode="false"
+         android:foreground="@drawable/dpad_focus"
          android:layout_width="@dimen/default_clickable_icon_size"
          android:layout_height="@dimen/default_clickable_icon_size"
          android:layout_alignParentTop="true"
@@ -102,6 +106,9 @@
 
      <ImageView
          android:id="@+id/icon_alternate"
+         android:focusable="true"
+         android:focusableInTouchMode="false"
+         android:foreground="@drawable/dpad_focus"
          android:layout_width="@dimen/default_clickable_icon_size"
          android:layout_height="@dimen/default_clickable_icon_size"
          android:layout_alignParentEnd="true"

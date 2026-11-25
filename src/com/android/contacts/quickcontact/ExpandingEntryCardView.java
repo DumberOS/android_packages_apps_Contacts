@@ -41,6 +41,7 @@ import android.util.Log;
 import android.util.Property;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -755,8 +756,75 @@ public class ExpandingEntryCardView extends CardView {
         // Set a custom touch listener for expanding the extra icon touch areas
         view.setOnTouchListener(new EntryTouchListener(view, alternateIcon, thirdIcon));
         view.setOnCreateContextMenuListener(mOnCreateContextMenuListener);
+        view.setFocusable(entry.getIntent() != null || entry.getEntryContextMenuInfo() != null);
+        view.setFocusableInTouchMode(false);
+
+        // A row surrounds its secondary buttons, so geometric focus search cannot reliably
+        // move between them. Left/right selects actions; up/down moves between whole rows.
+        final View[] actions = {view, thirdIcon, alternateIcon};
+        final OnKeyListener actionKeys = (focused, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    moveFocusBetweenRows(view, keyCode == KeyEvent.KEYCODE_DPAD_DOWN);
+                }
+                return true;
+            }
+            if (focused == view && entry.getIntent() == null
+                    && (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+                    || keyCode == KeyEvent.KEYCODE_ENTER)) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    view.showContextMenu();
+                }
+                return true;
+            }
+            if (keyCode != KeyEvent.KEYCODE_DPAD_LEFT
+                    && keyCode != KeyEvent.KEYCODE_DPAD_RIGHT) {
+                return false;
+            }
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                boolean forward = (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+                        != (view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL);
+                int index = focused == view ? 0 : focused == thirdIcon ? 1 : 2;
+                for (int i = index + (forward ? 1 : -1); i >= 0 && i < actions.length;
+                        i += forward ? 1 : -1) {
+                    if (actions[i].isShown() && actions[i].isFocusable()
+                            && actions[i].isEnabled()) {
+                        actions[i].requestFocus();
+                        break;
+                    }
+                }
+            }
+            return true;
+        };
+        for (View action : actions) {
+            action.setOnKeyListener(actionKeys);
+        }
 
         return view;
+    }
+
+    private static void moveFocusBetweenRows(EntryView row, boolean forward) {
+        List<View> targets = new ArrayList<>();
+        for (View candidate : row.getRootView().getFocusables(View.FOCUS_FORWARD)) {
+            // Secondary buttons are reached horizontally, never as extra vertical stops.
+            View parent = candidate;
+            while (parent.getParent() instanceof View && !(parent instanceof EntryView)) {
+                parent = (View) parent.getParent();
+            }
+            if (!(parent instanceof EntryView) || parent == candidate) {
+                targets.add(candidate);
+            }
+        }
+        int index = targets.indexOf(row);
+        if (index < 0) {
+            return;
+        }
+        for (int i = index + (forward ? 1 : -1); i >= 0 && i < targets.size();
+                i += forward ? 1 : -1) {
+            if (targets.get(i).requestFocus(forward ? View.FOCUS_DOWN : View.FOCUS_UP)) {
+                return;
+            }
+        }
     }
 
     private void updateExpandCollapseButton(CharSequence buttonText, long duration) {

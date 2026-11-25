@@ -21,7 +21,8 @@
     <dimen name="launchscreens_product_logo_bottom">64dp</dimen>
 
     <!-- Initial height of transparent space above QuickContacts -->
-    <dimen name="quickcontact_starting_empty_height">150dp</dimen>
+    <dimen name="quickcontact_starting_empty_height">0dp</dimen>
+    <dimen name="quickcontact_compact_header_height">112dp</dimen>
     <!-- Initial size of QuickContact's title size -->
     <dimen name="quickcontact_maximum_title_size">32dp</dimen>
     <!-- Initial size of QuickContact's phonetic name size -->

@@ -88,6 +88,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.WindowManager;
@@ -719,6 +720,7 @@ public class QuickContactActivity extends ContactsActivity {
                     mScroller.scrollOffBottom();
                 }
             });
+            transparentView.setFocusable(false);
         }
 
         // Allow a shadow to be shown under the toolbar.
@@ -730,6 +732,11 @@ public class QuickContactActivity extends ContactsActivity {
         // Put a TextView with a known resource id into the ActionBar. This allows us to easily
         // find the correct TextView location & size later.
         toolbar.addView(getLayoutInflater().inflate(R.layout.quickcontact_title_placeholder, null));
+        // Menu items and contact suggestions are populated asynchronously.
+        toolbar.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            configureActionFocus(toolbar);
+            configureActionFocus(findViewById(R.id.card_container));
+        });
 
         mHasAlreadyBeenOpened = savedInstanceState != null;
         mIsEntranceAnimationFinished = mHasAlreadyBeenOpened;
@@ -737,7 +744,7 @@ public class QuickContactActivity extends ContactsActivity {
         mWindowScrim.setAlpha(0);
         getWindow().setBackgroundDrawable(mWindowScrim);
 
-        mScroller.initialize(mMultiShrinkScrollerListener, mExtraMode == MODE_FULLY_EXPANDED,
+        mScroller.initialize(mMultiShrinkScrollerListener, /* isOpenContactSquare */ false,
                 /* maximumHeaderTextSize */ -1,
                 /* shouldUpdateNameViewHeight */ true);
         // mScroller needs to perform asynchronous measurements after initalize(), therefore
@@ -846,6 +853,23 @@ public class QuickContactActivity extends ContactsActivity {
         savedInstanceState.putBoolean(KEY_SEND_TO_VOICE_MAIL_STATE, mSendToVoicemailState);
         savedInstanceState.putBoolean(KEY_ARE_PHONE_OPTIONS_CHANGEABLE, mArePhoneOptionsChangable);
         savedInstanceState.putString(KEY_CUSTOM_RINGTONE, mCustomRingtone);
+    }
+
+    private static void configureActionFocus(View view) {
+        if (view.isClickable()) {
+            view.setFocusable(true);
+            view.setFocusableInTouchMode(false);
+            if (view.getForeground() == null) {
+                view.setForeground(view.getContext().getDrawable(R.drawable.dpad_focus));
+            }
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            group.setTouchscreenBlocksFocus(false);
+            for (int i = 0; i < group.getChildCount(); i++) {
+                configureActionFocus(group.getChildAt(i));
+            }
+        }
     }
 
     private void processIntent(Intent intent) {
